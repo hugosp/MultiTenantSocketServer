@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		.grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			grid-gap: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<label for="uid">uid
+		<input type="text" id="uid" value="710">
+	</label>
+	<label for="user_id">user_id
+		<input type="text" id="user_id" value="194">
+	</label>
+	<button onclick="connect()">connect !</button>
+
+	<hr>
+
+	<label for="msg">msg
+		<input type="text" id="msg">
+	</label>
+	<button onclick="conn.send(document.getElementById('msg').value)">Send</button>
+
+	<div class="grid">
+		<div>
+			<h3>Message</h3>
+			<ul id="message"></ul>
+		</div>
+
+
+		<div>
+			<h3>timer</h3>
+			<ul id="timer"></ul>
+		</div>
+
+		<div>
+			<h3>queue_status</h3>
+			<ul id="queue_status"></ul>
+		</div>
+
+	</div>
+
+
+	<script>
+
+		let conn;
+
+		function connect() {
+			const uid = document.getElementById('uid').value;
+			const userId = document.getElementById('user_id').value;
+
+			conn = new WebSocket('ws://localhost:8080?uid=' + uid + '&user_id=' + userId);
+
+			conn.onopen = (e) => console.log("Connection established!");
+			conn.onmessage = (e) => writeLog(e.data);
+		}
+
+		function writeLog(msg) {
+			const json = JSON.parse(msg);
+			const li = document.createElement('li');
+			li.innerHTML = JSON.stringify(json.data);
+			document.getElementById(json.type || 'message').prepend(li);
+		}
+
+	</script>
+</body>
+
+</html>
